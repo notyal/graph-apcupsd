@@ -11,5 +11,5 @@ if [[ -z $apc_status ]]; then
     exit 1
 fi
 
-rrdtool update /root/graph-apcupsd/apcupsd.rrd N:"${apc_status:0:-1}"
-#echo "${apc_status:0:-1}" >> /root/graph-apcupsd/debug.log
+rrdtool update /etc/apcupsd/apcupsd.rrd N:"${apc_status:0:-1}"
+#echo "${apc_status:0:-1}" >> /etc/apcupsd/debug.log

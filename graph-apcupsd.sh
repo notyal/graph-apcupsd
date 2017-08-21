@@ -1,6 +1,6 @@
 #!/bin/bash
 export LC_ALL='de_DE.UTF-8'
-rrd_location='/root/graph-apcupsd/apcupsd.rrd'
+rrd_location='/etc/apcupsd/apcupsd.rrd'
 rrd_graphdir='/usr/lib/cgi-bin/apcupsd'
 
 # 1% LOADPCT measures: ?.?? Watts
