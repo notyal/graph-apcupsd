@@ -1,13 +1,13 @@
 #!/bin/bash
-export LC_ALL='en_US.UTF-8'
-rrd_location='/etc/apcupsd/apcupsd.rrd'
+export LC_ALL='de_DE.UTF-8'
+rrd_location='/root/graph-apcupsd/apcupsd.rrd'
 rrd_graphdir='/usr/lib/cgi-bin/apcupsd'
 
 # 1% LOADPCT measures: ?.?? Watts
-lwmult='13.5'
+lwmult='8.65'
 
 # 1 kWh => x.xxx EUR
-kwhmult='0.1014'
+kwhmult='0.2311'
 
 ### Web page
 gen_gallery=1            # Generate index.html
@@ -80,8 +80,8 @@ for period in 1h/60 6h/60 1d/120 3d/300 5d/600 1w/600 1m/3600 3m/10800 1y/43200 
         --watermark "$(date) / kWh price: $kwhmult $cur_fmt" \
         "DEF:ds0=$rrd_location:LINEV:LAST" \
         "DEF:ds1=$rrd_location:LOADPCT:LAST" \
-        "DEF:ds2=$rrd_location:OUTPUTV:LAST" \
-        "DEF:ds3=$rrd_location:ITEMP:LAST" \
+        "DEF:ds2=$rrd_location:BCHARGE:LAST" \
+        "DEF:ds3=$rrd_location:TIMELEFT:LAST" \
         "DEF:ds4=$rrd_location:BATTV:LAST" \
         "DEF:ds5=$rrd_location:NUMXFERS:LAST" \
         "DEF:ds6=$rrd_location:TONBATT:LAST" \
@@ -111,12 +111,14 @@ for period in 1h/60 6h/60 1d/120 3d/300 5d/600 1w/600 1m/3600 3m/10800 1y/43200 
         "VDEF:ds0_AVG=ds0,AVERAGE" \
         "VDEF:ds0_FIRST=ds0,FIRST" \
         "VDEF:ds0_LAST=ds0,LAST" \
+        "VDEF:ds1_MIN=ds1,MINIMUM" \
         "VDEF:ds1_MAX=ds1,MAXIMUM" \
         "VDEF:ds1_LAST=ds1,LAST" \
         "VDEF:ds2_MIN=ds2,MINIMUM" \
         "VDEF:ds2_MAX=ds2,MAXIMUM" \
         "VDEF:ds2_AVG=ds2,AVERAGE" \
         "VDEF:ds2_LAST=ds2,LAST" \
+        "VDEF:ds3_MIN=ds3,MINIMUM" \
         "VDEF:ds3_MAX=ds3,MAXIMUM" \
         "VDEF:ds3_LAST=ds3,LAST" \
         "VDEF:ds4_MIN=ds4,MINIMUM" \
@@ -139,51 +141,54 @@ for period in 1h/60 6h/60 1d/120 3d/300 5d/600 1w/600 1m/3600 3m/10800 1y/43200 
         "GPRINT:cost_total: / <span size='larger' foreground='$PANA'>%.2lf $cur_fmt</span>\c" \
         "GPRINT:ds0_LAST: <span foreground='$PANA'>$period_fmt</span>  \r:strftime" \
         "TEXTALIGN:left" \
-        "COMMENT:  UPS load         " \
-        "GPRINT:ds1_LAST:<span foreground='$PANA'>%3.1lf %%</span>" \
+        "COMMENT:  UPS load\t\t\g" \
+        "GPRINT:ds1_LAST: <span foreground='$PANA'>%3.1lf %%</span>\g" \
+        "GPRINT:ds1_MIN: min\: <span foreground='$PANA'>%3.1lf %%</span>\g" \
+        "GPRINT:ds1_MIN: (<span foreground='$PANB'>$occur_fmt</span>)\g:strftime" \
         "GPRINT:ds1_MAX: max\: <span foreground='$PANA'>%3.1lf %%</span>\g" \
-        "GPRINT:ds1_MAX:  (<span foreground='$PANB'>$occur_fmt</span>)\n:strftime" \
-        "COMMENT:  Temperature      " \
-        "GPRINT:ds3_LAST:<span foreground='$PANA'>%3.1lf °C</span>" \
-        "GPRINT:ds3_MAX:max\: <span foreground='$PANA'>%3.1lf °C</span>\g" \
+        "GPRINT:ds1_MAX: (<span foreground='$PANB'>$occur_fmt</span>)\n:strftime" \
+        "COMMENT:  Time left\t\t\g" \
+        "GPRINT:ds3_LAST: <span foreground='$PANA'>%3.1lf m</span>\g" \
+        "GPRINT:ds3_MIN: min\: <span foreground='$PANA'>%3.1lfm</span>\g" \
+        "GPRINT:ds3_MIN: (<span foreground='$PANB'>$occur_fmt</span>)\g:strftime" \
+        "GPRINT:ds3_MAX: max\: <span foreground='$PANA'>%3.1lfm</span>\g" \
         "GPRINT:ds3_MAX: (<span foreground='$PANB'>$occur_fmt</span>)\n:strftime" \
-        "LINE1:batv$PAN1:Battery voltage  :skipscale" \
-        "GPRINT:ds4_LAST:<span foreground='$PAN1'>%3.1lf V</span>" \
+        "LINE1:batv$PAN1:Battery voltage\t\t\g:skipscale" \
+        "GPRINT:ds4_LAST: <span foreground='$PAN1'>%3.1lf V</span>\g" \
         "GPRINT:ds4_MAX: max\: <span foreground='$PAN1'>%3.1lf V</span>\g" \
-        "GPRINT:ds4_MAX:  (<span foreground='$PANB'>$occur_fmt</span>):strftime" \
-        "GPRINT:ds4_MIN:min\: <span foreground='$PAN1'>%3.1lf V</span>\g" \
+        "GPRINT:ds4_MAX: (<span foreground='$PANB'>$occur_fmt</span>)\g:strftime" \
+        "GPRINT:ds4_MIN: min\: <span foreground='$PAN1'>%3.1lf V</span>\g" \
         "GPRINT:ds4_MIN: (<span foreground='$PANB'>$occur_fmt</span>)\n:strftime" \
         "COMMENT:\u" \
         "GPRINT:daily_AVG:Average cost per/\tday\: <span foreground='$PANA'>%.2lf $cur_fmt</span>\r" \
         "COMMENT: \n" \
         "COMMENT:\u" \
         "GPRINT:weekly_AVG:\tweek\: <span foreground='$PANA'>%.2lf $cur_fmt</span>\r" \
-        "TICK:ds5${PAN2}:-0.5:Transfer events\: " \
-        "GPRINT:ds5_TOTAL:<span foreground='$PAN2'>%.0lf</span>" \
+        "TICK:ds5${PAN2}:-0.5:Transfer events\:\t\t\g" \
+        "GPRINT:ds5_TOTAL: <span foreground='$PAN2'>%.0lf</span>" \
         "COMMENT:\u" \
         "GPRINT:monthly_AVG:\tmonth\: <span foreground='$PANA'>%.1lf $cur_fmt</span>\r" \
-        "AREA:whonbat$PAN6:Battery usage    " \
-        "GPRINT:onbat_TOTAL:<span foreground='$PANA'>%.2lf hr</span> /" \
-        "GPRINT:batpower_TOTAL:<span foreground='$PANA'>%.2lf Wh</span>" \
+        "AREA:whonbat$PAN6:Battery usage\t\t\g" \
+        "GPRINT:onbat_TOTAL: <span foreground='$PANA'>%.2lf hr</span> /\g" \
+        "GPRINT:batpower_TOTAL: <span foreground='$PANA'>%.2lf Wh</span>\t\g" \
         "GPRINT:ds6_LAST:TONBATT\: <span foreground='$PANA'>%.0lf sec</span>\n" \
         "COMMENT:\u" \
         "GPRINT:yearly_AVG:\t\t\tyear\:  <span foreground='$PANA'>%.0lf $cur_fmt</span>\r" \
         "AREA:power${PAN3}60:" \
-        "LINE1:power$PAN3:Power consumption" \
-        "GPRINT:power_MIN:min\: <span foreground='$PAN3'>%6.1lf W</span>" \
-        "GPRINT:power_MAX:max\: <span foreground='$PAN3'>%6.1lf W</span>" \
-        "GPRINT:power_AVG:avg\: <span foreground='$PAN3'>%6.1lf W</span>" \
-        "GPRINT:power_LAST:last\: <span foreground='$PAN3' size='larger'>%6.1lf W</span>\n" \
-        "AREA:ds0${PAN4}90:Line voltage     " \
-        "GPRINT:ds0_MIN:min\: <span foreground='$PAN4'>%6.1lf V</span>" \
-        "GPRINT:ds0_MAX:max\: <span foreground='$PAN4'>%6.1lf V</span>" \
-        "GPRINT:ds0_AVG:avg\: <span foreground='$PAN4'>%6.1lf V</span>" \
-        "GPRINT:ds0_LAST:last\: <span foreground='$PAN4'>%6.1lf V</span>\n" \
-        "LINE1:ds2$PAN5:Output voltage   " \
-        "GPRINT:ds2_MIN:min\: <span foreground='$PAN5'>%6.1lf V</span>" \
-        "GPRINT:ds2_MAX:max\: <span foreground='$PAN5'>%6.1lf V</span>" \
-        "GPRINT:ds2_AVG:avg\: <span foreground='$PAN5'>%6.1lf V</span>" \
-        "GPRINT:ds2_LAST:last\: <span foreground='$PAN5'>%6.1lf V</span>\n" \
+        "LINE1:power$PAN3:Power consumption\t\g" \
+        "GPRINT:power_LAST:<span foreground='$PAN3'>%6.1lfW</span>\t\g" \
+        "GPRINT:power_MIN:(min\:<span foreground='$PAN3'>%6.1lfW</span>\g" \
+        "GPRINT:power_MAX: max\:<span foreground='$PAN3'>%6.1lfW</span>\g" \
+        "GPRINT:power_AVG: avg\:<span foreground='$PAN3'>%6.1lfW</span>)\n" \
+        "LINE1:ds0$PAN4:Line voltage\t\t\g" \
+        "GPRINT:ds0_LAST:<span foreground='$PAN4'>%6.1lfV</span>\t\g" \
+        "GPRINT:ds0_MIN:(min\:<span foreground='$PAN4'>%6.1lfV</span>\g" \
+        "GPRINT:ds0_MAX: max\:<span foreground='$PAN4'>%6.1lfV</span>\g" \
+        "GPRINT:ds0_AVG: avg\:<span foreground='$PAN4'>%6.1lfV</span>)\n" \
+        "LINE1:ds2$PAN5:Battery Charge\t\t\g" \
+        "GPRINT:ds2_LAST: <span foreground='$PAN5'>%3.1lf%%</span>\t\g" \
+        "GPRINT:ds2_MIN:(min\: <span foreground='$PAN5'>%3.1lf%%</span>\g" \
+        "GPRINT:ds2_MAX: max\: <span foreground='$PAN5'>%3.1lf%%</span>)" \
         "HRULE:power_LAST$RRC1:" \
         "COMMENT:\s" > /dev/null
     done

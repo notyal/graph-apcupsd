@@ -1,7 +1,7 @@
 #!/bin/bash
 
-apc_status="$(/sbin/apcaccess status | 
-    grep -e ^LINEV -e ^LOADPCT -e ^OUTPUTV -e ^ITEMP -e ^BATTV -e ^NUMXFERS -e ^TONBATT| 
+apc_status="$(/sbin/apcaccess status 10.10.10.10:3551| 
+    grep -e ^LINEV -e ^LOADPCT -e ^BCHARGE -e ^TIMELEFT -e ^BATTV -e ^NUMXFERS -e ^TONBATT| 
         awk '{ printf "%s:", $3}')"
 
 [[ $1 == "-d" ]] && { echo "$apc_status"; exit 0; }
@@ -11,5 +11,5 @@ if [[ -z $apc_status ]]; then
     exit 1
 fi
 
-rrdtool update /etc/apcupsd/apcupsd.rrd N:"${apc_status:0:-1}"
-#echo "${apc_status:0:-1}" >> /etc/apcupsd/debug.log
+rrdtool update /root/graph-apcupsd/apcupsd.rrd N:"${apc_status:0:-1}"
+#echo "${apc_status:0:-1}" >> /root/graph-apcupsd/debug.log
