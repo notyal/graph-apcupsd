@@ -1,6 +1,6 @@
 #!/bin/bash
 
-apc_status="$(/sbin/apcaccess status 10.10.10.10:3551| 
+apc_status="$(/sbin/apcaccess status | 
     grep -e ^LINEV -e ^LOADPCT -e ^BCHARGE -e ^TIMELEFT -e ^BATTV -e ^NUMXFERS -e ^TONBATT| 
         awk '{ printf "%s:", $3}')"
 

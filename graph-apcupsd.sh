@@ -1,13 +1,13 @@
 #!/bin/bash
-export LC_ALL='de_DE.UTF-8'
+export LC_ALL='en_US.UTF-8'
 rrd_location='/etc/apcupsd/apcupsd.rrd'
 rrd_graphdir='/usr/lib/cgi-bin/apcupsd'
 
 # 1% LOADPCT measures: ?.?? Watts
-lwmult='8.65'
+lwmult='7.8'
 
-# 1 kWh => x.xxx EUR
-kwhmult='0.2311'
+# 1 kWh => x.xxx USD
+kwhmult='0.13'
 
 ### Web page
 gen_gallery=1            # Generate index.html
@@ -22,7 +22,7 @@ favicon_size='32x32'     # 32px size
 rrd_font='DEFAULT:0:DroidSansMono Bold'
 period_fmt='%a %d %b %H\:%M %Y'
 occur_fmt='%d %b %H\:%M'
-cur_fmt='€' # cur_fmt="$(locale cur_fmt_symbol)"
+cur_fmt='$' # cur_fmt="$(locale cur_fmt_symbol)"
 
 # 'rrdgraph -c'-colors:
 RRCA='FONT#CBA13A'
