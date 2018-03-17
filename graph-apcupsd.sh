@@ -216,7 +216,10 @@ if ((gen_gallery)); then
         .thumb div { margin-left:5px; margin-bottom:3px; margin-top:3px; font-size:12px; background-color:black; }
         #footer { position:fixed; bottom: 0; width:100%; padding: 3px; background-color:#000000; text-align:center; font-size:10px; }
     </style>
-    <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script
+        src="//code.jquery.com/jquery-1.12.4.min.js"
+        integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+        crossorigin="anonymous"></script>
     <script>
         $(document).ready(function() {
             if (localStorage.getItem('lastImage')) {
